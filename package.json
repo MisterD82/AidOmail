@@ -1,0 +1,17 @@
+{
+  "name": "extension-whisper",
+  "version": "1.0.0",
+  "description": "Extension pour dicter du texte, le transcrire avec Whisper et le nettoyer avec l'IA",
+  "main": "popup.js",
+  "scripts": {
+    "dev": "live-server --port=3000 --open=preview.html",
+    "start": "npm run dev",
+    "build": "echo 'Extension prête pour le déploiement'"
+  },
+  "keywords": ["chrome-extension", "whisper", "speech-to-text", "ai"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

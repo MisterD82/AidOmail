@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Dictée et Nettoyage de Texte avec Whisper",
+  "version": "1.0",
+  "description": "Extension pour dicter du texte, le transcrire avec Whisper et le nettoyer avec l'IA.",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "clipboardWrite",
+    "tabs"
+  ],
+  "action": {
+    "default_icon": "icon.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
