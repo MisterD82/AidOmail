@@ -135,40 +135,60 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   async function sendAudioToWhisperAPI(audioBlob) {
-    const formData = new FormData();
-    formData.append('file', audioBlob, 'audio.webm');
-    formData.append('model', 'whisper-1');
-    formData.append('language', 'fr');
-
     try {
       const apiKey = await getAPIKey();
-      const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + apiKey
-          // Ne définissez pas 'Content-Type' lors de l'envoi de FormData
-        },
-        body: formData
-      });
 
-      const data = await response.json();
+      // Convertir le blob audio en base64
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
 
-      if (data.text) {
-        // Insérer le nouveau texte à la position du curseur
-        let currentText = transcribedText.value;
-        let newText = currentText.slice(0, cursorPosition) + data.text + currentText.slice(cursorPosition);
-        transcribedText.value = newText;
+      reader.onloadend = async function() {
+        const base64Audio = reader.result.split(',')[1];
 
-        // Mettre à jour la position du curseur
-        cursorPosition += data.text.length;
-        transcribedText.setSelectionRange(cursorPosition, cursorPosition);
+        // Déterminer le type MIME
+        const mimeType = audioBlob.type || 'audio/webm';
 
-        transcribedText.removeAttribute('readonly');
-        console.log('Transcription réussie.');
-      } else {
-        console.error('Erreur lors de la transcription:', data);
-        alert('Erreur lors de la transcription : ' + JSON.stringify(data));
-      }
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [
+                { text: "Transcris l'audio suivant en français. Retourne uniquement le texte transcrit sans commentaire additionnel." },
+                {
+                  inline_data: {
+                    mime_type: mimeType,
+                    data: base64Audio
+                  }
+                }
+              ]
+            }]
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+          const transcription = data.candidates[0].content.parts[0].text;
+
+          // Insérer le nouveau texte à la position du curseur
+          let currentText = transcribedText.value;
+          let newText = currentText.slice(0, cursorPosition) + transcription + currentText.slice(cursorPosition);
+          transcribedText.value = newText;
+
+          // Mettre à jour la position du curseur
+          cursorPosition += transcription.length;
+          transcribedText.setSelectionRange(cursorPosition, cursorPosition);
+
+          transcribedText.removeAttribute('readonly');
+          console.log('Transcription réussie.');
+        } else {
+          console.error('Erreur lors de la transcription:', data);
+          alert('Erreur lors de la transcription : ' + JSON.stringify(data));
+        }
+      };
     } catch (error) {
       console.error('Erreur lors de la transcription:', error);
       alert('Erreur lors de la transcription : ' + error.message);
@@ -177,34 +197,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function cleanTextWithAI(text) {
     const apiKey = await getAPIKey();
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a helpful assistant.'
-          },
-          {
-            role: 'user',
-            content: `Corrige ce texte pour qu'il soit grammaticalement correct et bien formaté. N'hésite pas à réorganiser les idées en paragraphes, mais n'ajoute pas de nouvelles phrases :\n\n${text}`
-          }
-        ],
-        max_tokens: 1000,
-        temperature: 0.2,
-        n: 1,
-        stop: null
+        contents: [{
+          parts: [{
+            text: `Corrige ce texte pour qu'il soit grammaticalement correct et bien formaté. N'hésite pas à réorganiser les idées en paragraphes, mais n'ajoute pas de nouvelles phrases. Retourne uniquement le texte corrigé sans introduction ni commentaire :\n\n${text}`
+          }]
+        }],
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 1000
+        }
       })
     });
 
     const data = await response.json();
-    if (data.choices && data.choices.length > 0) {
-      return data.choices[0].message.content.trim();
+    if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+      return data.candidates[0].content.parts[0].text.trim();
     } else {
       console.error('Erreur lors du nettoyage du texte:', data);
       throw new Error('Erreur lors du nettoyage du texte : ' + JSON.stringify(data));
@@ -214,13 +227,13 @@ document.addEventListener('DOMContentLoaded', function () {
   // Fonction pour obtenir la clé API de manière sécurisée
   async function getAPIKey() {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.get(['openai_api_key'], function(result) {
-        if (result.openai_api_key) {
-          resolve(result.openai_api_key);
+      chrome.storage.local.get(['google_api_key'], function(result) {
+        if (result.google_api_key) {
+          resolve(result.google_api_key);
         } else {
-          const key = prompt('Veuillez entrer votre clé API OpenAI:');
+          const key = prompt('Veuillez entrer votre clé API Google AI Studio:');
           if (key) {
-            chrome.storage.local.set({'openai_api_key': key});
+            chrome.storage.local.set({'google_api_key': key});
             resolve(key);
           } else {
             reject(new Error('Clé API requise pour utiliser cette fonctionnalité'));
