@@ -1,7 +1,7 @@
 {
-  "name": "extension-whisper",
+  "name": "aidomail",
   "version": "1.0.0",
-  "description": "Extension pour dicter du texte, le transcrire avec Whisper et le nettoyer avec l'IA",
+  "description": "AidoMail - Extension pour dicter du texte, le transcrire avec Whisper et le nettoyer avec l'IA",
   "main": "popup.js",
   "scripts": {
     "dev": "live-server --port=3000 --open=preview.html",
