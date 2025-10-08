@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Déterminer le type MIME
         const mimeType = audioBlob.type || 'audio/webm';
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function cleanTextWithAI(text) {
     const apiKey = await getAPIKey();
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
