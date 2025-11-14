@@ -7,10 +7,58 @@ document.addEventListener('DOMContentLoaded', function () {
   const cleanBtn = document.getElementById('cleanText');
   const restartBtn = document.getElementById('restartRecording');
   const transcribedText = document.getElementById('transcribedText');
+  const settingsBtn = document.getElementById('settingsBtn');
+  const settingsModal = document.getElementById('settingsModal');
+  const closeModal = document.querySelector('.close');
+  const modelSelect = document.getElementById('modelSelect');
+  const clearApiKeyBtn = document.getElementById('clearApiKey');
 
   let mediaRecorder;
   let audioChunks = [];
   let cursorPosition = 0;
+
+  // Charger le modèle sélectionné depuis le stockage
+  chrome.storage.local.get(['selected_model'], function(result) {
+    if (result.selected_model) {
+      modelSelect.value = result.selected_model;
+    } else {
+      modelSelect.value = 'gemini-2.0-flash'; // Valeur par défaut
+    }
+  });
+
+  // Ouvrir la modal des paramètres
+  settingsBtn.addEventListener('click', function() {
+    settingsModal.style.display = 'block';
+  });
+
+  // Fermer la modal
+  closeModal.addEventListener('click', function() {
+    settingsModal.style.display = 'none';
+  });
+
+  // Fermer la modal en cliquant en dehors
+  window.addEventListener('click', function(event) {
+    if (event.target === settingsModal) {
+      settingsModal.style.display = 'none';
+    }
+  });
+
+  // Sauvegarder le modèle sélectionné
+  modelSelect.addEventListener('change', function() {
+    chrome.storage.local.set({'selected_model': modelSelect.value}, function() {
+      console.log('Modèle sauvegardé:', modelSelect.value);
+    });
+  });
+
+  // Effacer la clé API
+  clearApiKeyBtn.addEventListener('click', function() {
+    if (confirm('Êtes-vous sûr de vouloir effacer la clé API ?')) {
+      chrome.storage.local.remove('google_api_key', function() {
+        alert('Clé API effacée avec succès');
+        console.log('Clé API effacée');
+      });
+    }
+  });
 
   // Ajoutez les écouteurs d'événements pour le curseur ici
   transcribedText.addEventListener('click', function() {
@@ -137,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
   async function sendAudioToWhisperAPI(audioBlob) {
     try {
       const apiKey = await getAPIKey();
+      const model = await getSelectedModel();
 
       // Convertir le blob audio en base64
       const reader = new FileReader();
@@ -148,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Déterminer le type MIME
         const mimeType = audioBlob.type || 'audio/webm';
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -197,7 +246,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function cleanTextWithAI(text) {
     const apiKey = await getAPIKey();
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const model = await getSelectedModel();
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -239,6 +289,15 @@ document.addEventListener('DOMContentLoaded', function () {
             reject(new Error('Clé API requise pour utiliser cette fonctionnalité'));
           }
         }
+      });
+    });
+  }
+
+  // Fonction pour obtenir le modèle sélectionné
+  async function getSelectedModel() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['selected_model'], function(result) {
+        resolve(result.selected_model || 'gemini-2.0-flash');
       });
     });
   }
