@@ -16,7 +16,11 @@
     }
 
     body {
-      width: 450px;
+      width: 550px;
+      min-width: 350px;
+      max-width: 780px;
+      resize: both;
+      overflow: auto;
       padding: 16px;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background-color: var(--bg-color);
@@ -136,6 +140,10 @@
     .btn-primary {
       background-color: var(--primary-color);
       color: white;
+    }
+
+    #toggleRecording {
+      min-width: 180px;
     }
     .btn-primary:hover { background-color: #1d4ed8; }
     .btn-primary:disabled { background-color: #93c5fd; cursor: not-allowed; }
@@ -306,6 +314,14 @@
         <select id="modelSelect">
           <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
           <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label for="displayModeSelect">Mode d'affichage :</label>
+        <select id="displayModeSelect">
+          <option value="tab">Nouvel onglet</option>
+          <option value="window">Nouvelle fenêtre</option>
+          <option value="popup">Fenêtre flottante (Popup)</option>
         </select>
       </div>
       <div class="setting-group">

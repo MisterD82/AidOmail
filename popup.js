@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const modelSelect = document.getElementById('modelSelect');
   const languageSelect = document.getElementById('languageSelect');
   const styleSelect = document.getElementById('styleSelect');
+  const displayModeSelect = document.getElementById('displayModeSelect');
   const charCount = document.getElementById('charCount');
   const clearApiKeyBtn = document.getElementById('clearApiKey');
 
@@ -23,10 +24,11 @@ document.addEventListener('DOMContentLoaded', function () {
   let isRecording = false;
 
   // Charger le modèle sélectionné depuis le stockage
-  chrome.storage.local.get(['selected_model', 'selected_language', 'selected_style'], function(result) {
+  chrome.storage.local.get(['selected_model', 'selected_language', 'selected_style', 'display_mode'], function(result) {
     if (result.selected_model) modelSelect.value = result.selected_model;
     if (result.selected_language) languageSelect.value = result.selected_language;
     if (result.selected_style) styleSelect.value = result.selected_style;
+    if (result.display_mode) displayModeSelect.value = result.display_mode;
   });
 
   // Mise à jour du compteur de caractères
@@ -41,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   styleSelect.addEventListener('change', function() {
     chrome.storage.local.set({'selected_style': styleSelect.value});
+  });
+  displayModeSelect.addEventListener('change', function() {
+    chrome.storage.local.set({'display_mode': displayModeSelect.value});
   });
 
   // Ouvrir la modal des paramètres
@@ -185,13 +190,6 @@ document.addEventListener('DOMContentLoaded', function () {
         mediaRecorder.ondataavailable = event => {
           audioChunks.push(event.data);
         };
-
-        // Arrêter l'enregistrement après 2 minutes
-        setTimeout(() => {
-          if (mediaRecorder && mediaRecorder.state === "recording") {
-            stopRecording();
-          }
-        }, 120000); // 2 minutes
       })
       .catch(error => {
         console.error('Erreur lors de l\'accès au microphone:', error);
