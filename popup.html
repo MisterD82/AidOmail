@@ -4,67 +4,172 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AidoMail</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body {
-      width: 400px; /* Augmenté de 300px à 400px */
-      padding: 20px;
-      font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #4b5563;
+      --bg-color: #f3f4f6;
+      --card-bg: #ffffff;
+      --text-color: #1f2937;
+      --border-radius: 12px;
     }
-    .container {
+
+    body {
+      width: 450px;
+      padding: 16px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      margin-bottom: 16px;
+    }
+
+    /* Header Section */
+    .header-controls {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
     }
-    button {
-      padding: 10px 15px;
-      border: none;
+
+    .language-select {
+      padding: 8px 12px;
+      border: 1px solid #e5e7eb;
       border-radius: 8px;
-      color: white;
-      font-weight: bold;
+      background-color: #f9fafb;
+      font-weight: 600;
+      color: #374151;
       cursor: pointer;
-      text-align: center;
-      width: 100%;
-      transition: background-color 0.3s, opacity 0.3s;
-    }
-    #startRecording { background-color: #4caf50; } /* Vert plus foncé */
-    #stopRecording { background-color: #ef5350; } /* Rouge plus doux */
-    #cleanText { background-color: #ab47bc; } /* Violet plus doux */
-    #copyText { background-color: #42a5f5; } /* Bleu plus doux */
-    #restartRecording { background-color: #f57c00; } /* Orange plus foncé */
-    textarea {
-      width: 100%;
-      height: 150px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      padding: 10px;
-      box-sizing: border-box;
-      resize: both; /* Permet le redimensionnement dans les deux sens */
-    }
-    button:hover {
-      opacity: 0.9;
-    }
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .settings-container {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-    #settingsBtn {
-      background-color: #757575;
-      width: auto;
-      padding: 8px 15px;
-      font-size: 14px;
       display: flex;
       align-items: center;
       gap: 8px;
     }
-    .gear-icon {
-      font-size: 16px;
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
     }
+
+    /* Text Area Section */
+    .text-area-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    textarea {
+      width: 100%;
+      height: 180px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      box-sizing: border-box;
+      resize: vertical;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #1f2937;
+      outline: none;
+    }
+
+    textarea:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Controls Section */
+    .controls-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .style-select-container {
+      flex: 1;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background-color: #f9fafb;
+      font-size: 14px;
+      color: #374151;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Buttons */
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: white;
+    }
+    .btn-primary:hover { background-color: #1d4ed8; }
+    .btn-primary:disabled { background-color: #93c5fd; cursor: not-allowed; }
+
+    .btn-secondary {
+      background-color: #d1d5db; /* Gris plus visible */
+      color: #374151;
+    }
+    .btn-secondary:hover { background-color: #9ca3af; }
+
+    .btn-danger {
+      background-color: #ef4444;
+      color: white;
+    }
+    .btn-danger:hover { background-color: #dc2626; }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1px solid #d1d5db;
+      color: #374151;
+    }
+    .btn-outline:hover { background-color: #f3f4f6; }
+
+    .btn-large {
+      width: 100%;
+      padding: 12px;
+      font-size: 15px;
+      background-color: #8b5cf6;
+      color: white;
+      margin-top: 16px;
+    }
+    .btn-large:hover { background-color: #7c3aed; }
+
+    /* Settings Modal */
     .modal {
       display: none;
       position: fixed;
@@ -73,16 +178,17 @@
       top: 0;
       width: 100%;
       height: 100%;
-      background-color: rgba(0,0,0,0.4);
+      background-color: rgba(0,0,0,0.5);
+      backdrop-filter: blur(2px);
     }
     .modal-content {
-      background-color: #fefefe;
-      margin: 10% auto;
-      padding: 20px;
-      border: 1px solid #888;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 350px;
+      background-color: #fff;
+      margin: 20% auto;
+      padding: 24px;
+      border-radius: 16px;
+      width: 85%;
+      max-width: 320px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
     }
     .modal-header {
       display: flex;
@@ -90,54 +196,102 @@
       align-items: center;
       margin-bottom: 20px;
     }
-    .modal-header h2 {
-      margin: 0;
-      color: #333;
-    }
     .close {
-      color: #aaa;
-      font-size: 28px;
-      font-weight: bold;
+      font-size: 24px;
       cursor: pointer;
-      line-height: 20px;
+      color: #9ca3af;
     }
-    .close:hover,
-    .close:focus {
-      color: #000;
+    .setting-group { margin-bottom: 16px; }
+    .setting-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
+
+    /* Recording Animation */
+    .recording-pulse {
+      animation: pulse 1.5s infinite;
+      background-color: #ef4444 !important;
     }
-    .setting-group {
-      margin-bottom: 20px;
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
     }
-    .setting-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-      color: #333;
-    }
-    .setting-group select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+
+    .settings-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px; /* Positionné en haut à droite, hors du flux normal si nécessaire, ou intégré */
+      color: #9ca3af;
+      cursor: pointer;
       font-size: 14px;
     }
-    #clearApiKey {
-      background-color: #ef5350;
-      margin-top: 10px;
+    
+    /* Layout adjustments */
+    .main-layout {
+      position: relative;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="settings-container">
-      <button id="settingsBtn"><span class="gear-icon">⚙️</span>Paramètres</button>
+  <div class="main-layout">
+    <!-- Settings Trigger -->
+    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+        <button id="settingsBtn" class="btn-outline" style="padding: 4px 8px; font-size: 12px;">
+            <i class="fas fa-cog"></i> Paramètres
+        </button>
     </div>
-    <textarea id="transcribedText" readonly></textarea>
-    <button id="startRecording">Démarrer l'enregistrement</button>
-    <button id="stopRecording" disabled>Arrêter l'enregistrement</button>
-    <button id="cleanText">Nettoyer avec l'IA</button>
-    <button id="copyText">Copier le texte</button>
-    <button id="restartRecording">Recommencer l'enregistrement</button>
+
+    <!-- Top Card: Language & Dictation -->
+    <div class="card header-controls">
+      <select id="languageSelect" class="language-select" style="width: auto;">
+        <option value="fr">🇫🇷 FR Français</option>
+        <option value="en">🇬🇧 EN English</option>
+        <option value="nl">🇳🇱 NL Nederlands</option>
+      </select>
+      
+      <div class="top-actions">
+        <button id="toggleRecording" class="btn-primary">
+          <i class="fas fa-microphone"></i> <span id="recordBtnText">Dicter</span>
+        </button>
+        <button id="clearText" class="btn-secondary">
+          <i class="fas fa-eraser"></i> Effacer
+        </button>
+      </div>
+    </div>
+
+    <!-- Middle Card: Text Area -->
+    <div class="card">
+      <div class="text-area-header">
+        <span><i class="far fa-file-alt"></i> Votre texte</span>
+        <span id="charCount" style="color: #9ca3af; font-weight: normal;">0 caractères</span>
+      </div>
+      <textarea id="transcribedText" placeholder="Cliquez ici pour placer votre curseur, puis utilisez le bouton 'Dicter' pour commencer..."></textarea>
+    </div>
+
+    <!-- Bottom Card: Actions -->
+    <div class="card">
+      <div class="controls-label">Style de traitement</div>
+      <div class="controls-row">
+        <div class="style-select-container">
+          <select id="styleSelect">
+            <option value="neutre">Texte neutre (Correction simple)</option>
+            <option value="formel">Mail formel (Professionnel)</option>
+            <option value="informel">Mail informel (Amical)</option>
+            <option value="pedagogique">Remarque pédagogique (Bienveillant)</option>
+          </select>
+        </div>
+        <button id="cleanText" class="btn-secondary" style="background-color: #cbd5e1;">
+          <i class="fas fa-magic"></i> Améliorer
+        </button>
+        <button id="copyText" class="btn-secondary" style="background-color: #cbd5e1;">
+          <i class="far fa-copy"></i> Copier
+        </button>
+      </div>
+    </div>
+
+    <!-- Restart Button -->
+    <button id="restartRecording" class="btn-large">
+      <i class="fas fa-redo"></i> Nouvel enregistrement
+    </button>
+
   </div>
 
   <!-- Modal des paramètres -->
@@ -155,7 +309,7 @@
         </select>
       </div>
       <div class="setting-group">
-        <button id="clearApiKey">Effacer la clé API</button>
+        <button id="clearApiKey" class="btn-danger" style="width: 100%;">Effacer la clé API</button>
       </div>
     </div>
   </div>
