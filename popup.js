@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function () {
         break;
       case 'neutre':
       default:
-        prompt = `Corrige ce texte en ${langName} pour qu'il soit grammaticalement correct et bien formaté. N'ajoute pas de style particulier. Retourne uniquement le texte corrigé sans introduction ni commentaire :\n\n${text}`;
+        prompt = `Corrige ce texte en ${langName} pour qu'il soit grammaticalement correct et bien formaté. N'hésite pas à réorganiser les idées en paragraphes, mais n'ajoute pas de nouvelles phrases. Retourne uniquement le texte corrigé sans introduction ni commentaire :\n\n${text}`;
         break;
     }
 
